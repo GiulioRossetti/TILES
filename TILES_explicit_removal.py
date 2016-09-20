@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-    Created on 11/feb/2015
+    Created on 20/09/2016
     @author: Giulio Rossetti
 """
 import networkx as nx
 import gzip
-from Queue import PriorityQueue
 import datetime
 import time
 from cStringIO import StringIO
@@ -22,12 +22,11 @@ class TILES(object):
         ***Mongodb version***
     """
 
-    def __init__(self, filename=None, g=nx.Graph(), ttl=float('inf'), obs=7, path="", start=None, end=None):
+    def __init__(self, filename=None, g=nx.Graph(), obs=7, path="", start=None, end=None):
         """
             Constructor
             :param con: mongod connection
             :param g: networkx graph
-            :param ttl: edge time to live (days)
             :param obs: observation window (days)
             :param path: Path where generate the results and find the edge file
             :param start: starting date
@@ -35,7 +34,6 @@ class TILES(object):
         """
         self.communities = {}
         self.path = path
-        self.ttl = ttl
         self.cid = 0
         self.actual_slice = 0
         self.g = g
@@ -56,9 +54,8 @@ class TILES(object):
         self.status.write("Started! (%s) \n\n" % str(time.asctime(time.localtime(time.time()))))
         self.status.flush()
 
-        qr = PriorityQueue()
         f = open(self.filename)
-        actual_time = datetime.datetime.fromtimestamp(float(f.next().split(",")[2]))
+        actual_time = datetime.datetime.fromtimestamp(float(f.next().rstrip().split("\t")[3]))
         last_break = actual_time
         f.close()
 
@@ -70,26 +67,26 @@ class TILES(object):
 
         f = open(self.filename)
         for l in f:
-            l = l.split(",")
+            l = l.rstrip().split("\t")
             self.added += 1
             e = {}
-            u = int(l[0])
-            v = int(l[1])
-            dt = datetime.datetime.fromtimestamp(float(l[2]))
+            action = l[0]
+            u = int(l[1])
+            v = int(l[2])
+            dt = datetime.datetime.fromtimestamp(float(l[3]))
 
             e['weight'] = 1
-            e["u"] = l[0]
-            e["v"] = l[1]
-            # month = dt.month
+            e["u"] = u
+            e["v"] = v
 
             #############################################
             #               Observations                #
             #############################################
 
             gap = dt - last_break
-            dif = gap.days
+            dif = gap.seconds/3600
 
-            if dif == self.obs:
+            if dif >= self.obs:
                 last_break = dt
 
                 print "New slice. Starting Day: %s" % dt
@@ -119,13 +116,13 @@ class TILES(object):
                 continue
 
             # Check if edge removal is required
-            if self.ttl != float('inf'):
-                qr.put((dt, e))
-                self.__remove(dt, qr)
+            if action == '-':
+                self.__remove(e)
+                continue
 
             if not self.g.has_node(u):
                 self.g.add_node(u)
-                self.g.node[u]['c_coms'] = {}  # central
+                self.g.node[u]['c_coms'] = {}
 
             if not self.g.has_node(v):
                 self.g.add_node(v)
@@ -176,7 +173,7 @@ class TILES(object):
         self.communities[self.cid] = {}
         return self.cid
 
-    def __remove(self, actual_time, qr):
+    def __remove(self, e):
         """
             Edge removal procedure
             :param actual_time: timestamp of the last inserted edge
@@ -184,75 +181,40 @@ class TILES(object):
         """
 
         coms_to_change = {}
-        at = actual_time
 
-        # main cycle on the removal queue
-        if not qr.empty():
+        self.removed += 1
+        u = e["u"]
+        v = e["v"]
 
-            t = qr.get()
-            timestamp = t[0]
-            e = t[1]
+        if self.g.has_edge(u, v):
 
-            delta = at - timestamp
-            displacement = delta.days
+            # u and v shared communities
+            if len(self.g.neighbors(u)) > 1 and len(self.g.neighbors(v)) > 1:
+                coms = set(self.g.node[u]['c_coms'].keys()) & set(self.g.node[v]['c_coms'].keys())
 
-            if displacement < self.ttl:
-                qr.put((timestamp, e))
-
+                for c in coms:
+                    if c not in coms_to_change:
+                        cn = set(self.g.neighbors(u)) & set(self.g.neighbors(v))
+                        coms_to_change[c] = [u, v]
+                        coms_to_change[c].extend(list(cn))
+                    else:
+                        cn = set(self.g.neighbors(u)) & set(self.g.neighbors(v))
+                        coms_to_change[c].extend(list(cn))
+                        coms_to_change[c].extend([u, v])
+                        ctc = set(coms_to_change[c])
+                        coms_to_change[c] = list(ctc)
             else:
-                while self.ttl <= displacement:
+                if len(self.g.neighbors(u)) < 2:
+                    coms_u = self.g.node[u]['c_coms'].keys()
+                    for cid in coms_u:
+                        self.__remove_from_community(u, cid)
 
-                    self.removed += 1
-                    u = e["u"]
-                    v = e["v"]
+                if len(self.g.neighbors(v)) < 2:
+                    coms_v = self.g.node[v]['c_coms'].keys()
+                    for cid in coms_v:
+                        self.__remove_from_community(v, cid)
 
-                    if self.g.has_edge(u, v):
-
-                        w = self.g.edge[u][v]["weight"]
-
-                        # decreasing link weight if greater than one
-                        # (multiple occurrence of the edge: remove only the oldest)
-                        if w > 1:
-                            self.g.edge[u][v]["weight"] = w - 1
-                            qr.put((at, e))
-
-                        else:
-                            # u and v shared communities
-                            if len(self.g.neighbors(u)) > 1 and len(self.g.neighbors(v)) > 1:
-                                coms = set(self.g.node[u]['c_coms'].keys()) & set(self.g.node[v]['c_coms'].keys())
-
-                                for c in coms:
-                                    if c not in coms_to_change:
-                                        cn = set(self.g.neighbors(u)) & set(self.g.neighbors(v))
-                                        coms_to_change[c] = [u, v]
-                                        coms_to_change[c].extend(list(cn))
-                                    else:
-                                        cn = set(self.g.neighbors(u)) & set(self.g.neighbors(v))
-                                        coms_to_change[c].extend(list(cn))
-                                        coms_to_change[c].extend([u, v])
-                                        ctc = set(coms_to_change[c])
-                                        coms_to_change[c] = list(ctc)
-                            else:
-                                if len(self.g.neighbors(u)) < 2:
-                                    coms_u = self.g.node[u]['c_coms'].keys()
-                                    for cid in coms_u:
-                                        self.__remove_from_community(u, cid)
-
-                                if len(self.g.neighbors(v)) < 2:
-                                    coms_v = self.g.node[v]['c_coms'].keys()
-                                    for cid in coms_v:
-                                        self.__remove_from_community(v, cid)
-
-                            self.g.remove_edge(u, v)
-
-                    if not qr.empty():
-                        t = qr.get()
-
-                        timestamp = t[0]
-                        delta = at - timestamp
-                        displacement = delta.days
-
-                        e = t[1]
+            self.g.remove_edge(u, v)
 
         # update of shared communities
         for c in coms_to_change:
@@ -438,7 +400,7 @@ class TILES(object):
         out_file_graph = gzip.open("%s/graph-%d.gz" % (self.path, self.actual_slice), "w", 3)
         g_string = StringIO()
         for e in self.g.edges():
-            g_string.write("%d\t%s\t%d\n" % (e[0], e[1], self.g.edge[e[0]][e[1]]['weight']))
+           g_string.write("%d\t%s\t%d\n" % (e[0], e[1], self.g.edge[e[0]][e[1]]['weight']))
 
         out_file_graph.write(g_string.getvalue())
         out_file_graph.flush()
@@ -525,10 +487,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('filename', type=str, help='filename')
-    parser.add_argument('-t', '--ttl', type=float, help='ttl', default=float('inf'))
     parser.add_argument('-o', '--obs', type=int, help='obs', default=7)
     parser.add_argument('-p', '--path', type=str, help='path', default="")
 
     args = parser.parse_args()
-    an = TILES(filename=args.filename, ttl=args.ttl, obs=args.obs, path=args.path)
+    an = TILES(filename=args.filename, obs=args.obs, path=args.path)
     an.execute()
+
