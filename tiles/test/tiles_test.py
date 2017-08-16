@@ -35,7 +35,7 @@ class TilesTestCase(unittest.TestCase):
         shutil.rmtree("res")
 
         os.makedirs("res2")
-        et = t.TILES(filename="%s/sample_net_tiles.tsv" % base, obs=1, path="res2", ttl=86400)
+        et = t.TILES(filename="%s/sample_net_tiles.tsv" % base, obs=1, path="res2", ttl=1)
         et.execute()
 
         count = 0
@@ -44,6 +44,17 @@ class TilesTestCase(unittest.TestCase):
         self.assertEqual(count, 6)
 
         shutil.rmtree("res2")
+
+        os.makedirs("res3")
+        et = t.TILES(filename="%s/sample_net_tiles.tsv" % base, obs=1, path="res3", ttl=2)
+        et.execute()
+
+        count = 0
+        for _ in glob.glob("res3/graph*"):
+            count += 1
+        self.assertEqual(count, 6)
+
+        shutil.rmtree("res3")
 
 if __name__ == '__main__':
     unittest.main()

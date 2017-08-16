@@ -268,6 +268,10 @@ class TILES(object):
                         e = t[1]
 
         # update of shared communities
+        self.update_shared_coms(coms_to_change)
+
+    def update_shared_coms(self, coms_to_change):
+        # update of shared communities
         for c in coms_to_change:
 
             c_nodes = self.communities[c].keys()

@@ -158,16 +158,6 @@ class eTILES(TILES):
         self.status.flush()
         self.status.close()
 
-    @property
-    def new_community_id(self):
-        """
-            Return a new community identifier
-            :return: new community id
-        """
-        self.cid += 1
-        self.communities[self.cid] = {}
-        return self.cid
-
     def remove_edge(self, e):
         """
             Edge removal procedure
@@ -212,51 +202,4 @@ class eTILES(TILES):
             self.g.remove_edge(u, v)
 
         # update of shared communities
-        for c in coms_to_change:
-
-            c_nodes = self.communities[c].keys()
-
-            if len(c_nodes) > 3:
-
-                sub_c = self.g.subgraph(c_nodes)
-                c_components = nx.number_connected_components(sub_c)
-
-                # unbroken community
-                if c_components == 1:
-                    to_mod = sub_c.subgraph(coms_to_change[c])
-                    self.modify_after_removal(to_mod, c)
-
-                # broken community: bigger one maintains the id, the others obtain a new one
-                else:
-                    new_ids = []
-
-                    first = True
-                    components = nx.connected_components(sub_c)
-                    for com in components:
-                        if first:
-                            if len(com) < 3:
-                                self.destroy_community(c)
-                            else:
-                                to_mod = list(set(com) & set(coms_to_change[c]))
-                                sub_c = self.g.subgraph(to_mod)
-                                self.modify_after_removal(sub_c, c)
-                            first = False
-
-                        else:
-                            if len(com) > 3:
-                                # update the memberships: remove the old ones and add the new one
-                                to_mod = list(set(com) & set(coms_to_change[c]))
-                                sub_c = self.g.subgraph(to_mod)
-
-                                central = self.centrality_test(sub_c).keys()
-                                if len(central) >= 3:
-                                    actual_id = self.new_community_id
-                                    new_ids.append(actual_id)
-                                    for n in central:
-                                        self.add_to_community(n, actual_id)
-
-                    # splits
-                    if len(new_ids) > 0 and self.actual_slice > 0:
-                        self.spl.write(u"%s\t%s\n" % (c, str(new_ids)))
-            else:
-                self.destroy_community(c)
+        self.update_shared_coms(coms_to_change)
