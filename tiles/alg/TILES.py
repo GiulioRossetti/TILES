@@ -133,7 +133,7 @@ class TILES(object):
 
             # Check if edge removal is required
             if self.ttl != float('inf'):
-                qr.put((dt, e))
+                qr.put((dt, (e['u'], e['v'], e['weight'])))
                 self.remove(dt, qr)
 
             if not self.g.has_node(u):
@@ -204,20 +204,20 @@ class TILES(object):
 
             t = qr.get()
             timestamp = t[0]
-            e = t[1]
+            e = (t[1][0],  t[1][1], t[1][2])
 
             delta = at - timestamp
             displacement = delta.days
 
             if displacement < self.ttl:
-                qr.put((timestamp, e))
+                qr.put((timestamp, t[1]))
 
             else:
                 while self.ttl <= displacement:
 
                     self.removed += 1
-                    u = e["u"]
-                    v = e["v"]
+                    u = e[0]
+                    v = e[1]
 
                     if self.g.has_edge(u, v):
 
@@ -227,6 +227,7 @@ class TILES(object):
                         # (multiple occurrence of the edge: remove only the oldest)
                         if w > 1:
                             self.g.edge[u][v]["weight"] = w - 1
+                            e = (u,  v, w-1)
                             qr.put((at, e))
 
                         else:
@@ -259,6 +260,7 @@ class TILES(object):
                             self.g.remove_edge(u, v)
 
                     if not qr.empty():
+
                         t = qr.get()
 
                         timestamp = t[0]
