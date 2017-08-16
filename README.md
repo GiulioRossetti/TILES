@@ -7,7 +7,7 @@ Tiles is an algorithm that extracts overlapping communities and tracks their evo
 If you use our algorithm please cite the following work:
 
 >Giulio Rossetti, Luca Pappalardo, Dino Pedreschi, Fosca Giannotti (2016): 
->Tiles: an online algorithm for community discovery in dynamic social networks. 
+>["Tiles: an online algorithm for community discovery in dynamic social networks"](http://link.springer.com/article/10.1007/s10994-016-5582-8). 
 >In: Machine Learning Journal, 2016. [10.1007/s10994-016-5582-8](doi:10.1007/s10994-016-5582-8)
 
 ## Installation
