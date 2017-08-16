@@ -1,0 +1,5 @@
+[run]
+omit =
+ setup.py
+ tiles/__main__.py
+ tiles/test/*
