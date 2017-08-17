@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/GiulioRossetti/TILES/badge.svg?branch=master)](https://coveralls.io/github/GiulioRossetti/TILES?branch=master)
 [![pyversions](https://img.shields.io/pypi/pyversions/TILES.svg)](https://badge.fury.io/py/TILES)
 [![PyPI version](https://badge.fury.io/py/tiles.svg)](https://badge.fury.io/py/TILES)
+[![BCH compliance](https://bettercodehub.com/edge/badge/GiulioRossetti/TILES?branch=master)](https://bettercodehub.com/)
 
 
 Community discovery has emerged during the last decade as one of the most challenging problems in social network analysis. Many algorithms have been proposed to find communities on static networks, i.e. networks which do not change in time. However, social networks are dynamic realities (e.g. call graphs, online social networks): in such scenarios static community discovery fails to identify a partition of the graph that is semantically consistent with the temporal information expressed by the data. 
