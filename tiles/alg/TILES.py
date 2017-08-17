@@ -133,7 +133,7 @@ class TILES(object):
 
             # Check if edge removal is required
             if self.ttl != float('inf'):
-                qr.put((dt, (e['u'], e['v'], e['weight'])))
+                qr.put((dt, (int(e['u']), int(e['v']), int(e['weight']))))
                 self.remove(dt, qr)
 
             if not self.g.has_node(u):
@@ -216,9 +216,8 @@ class TILES(object):
                 while self.ttl <= displacement:
 
                     self.removed += 1
-                    u = e[0]
-                    v = e[1]
-
+                    u = int(e[0])
+                    v = int(e[1])
                     if self.g.has_edge(u, v):
 
                         w = self.g.edge[u][v]["weight"]
@@ -248,12 +247,12 @@ class TILES(object):
                                         coms_to_change[c] = list(ctc)
                             else:
                                 if len(self.g.neighbors(u)) < 2:
-                                    coms_u = self.g.node[u]['c_coms'].keys()
+                                    coms_u = [x for x in self.g.node[u]['c_coms'].keys()]
                                     for cid in coms_u:
                                         self.remove_from_community(u, cid)
 
                                 if len(self.g.neighbors(v)) < 2:
-                                    coms_v = self.g.node[v]['c_coms'].keys()
+                                    coms_v = [x for x in self.g.node[v]['c_coms'].keys()]
                                     for cid in coms_v:
                                         self.remove_from_community(v, cid)
 
@@ -275,6 +274,8 @@ class TILES(object):
     def update_shared_coms(self, coms_to_change):
         # update of shared communities
         for c in coms_to_change:
+            if c not in self.communities:
+                continue
 
             c_nodes = self.communities[c].keys()
 
@@ -498,8 +499,12 @@ class TILES(object):
         self.communities.pop(cid, None)
 
     def add_to_community(self, node, cid):
+
         self.g.node[node]['c_coms'][cid] = None
-        self.communities[cid][node] = None
+        if cid in self.communities:
+            self.communities[cid][node] = None
+        else:
+            self.communities[cid] = {node: None}
 
     def remove_from_community(self, node, cid):
         if cid in self.g.node[node]['c_coms']:

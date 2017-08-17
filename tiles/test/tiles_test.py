@@ -56,5 +56,19 @@ class TilesTestCase(unittest.TestCase):
 
         shutil.rmtree("res3")
 
+    def test_TILES_rem(self):
+        base = os.path.dirname(os.path.abspath(__file__))
+
+        os.makedirs("res4")
+        et = t.TILES(filename="%s/gen_simple.tsv" % base, obs=30, path="res4", ttl=90)
+        et.execute()
+
+        count = 0
+        for _ in glob.glob("res4/graph*"):
+            count += 1
+
+        self.assertEqual(count, 34)
+        shutil.rmtree("res4")
+
 if __name__ == '__main__':
     unittest.main()
