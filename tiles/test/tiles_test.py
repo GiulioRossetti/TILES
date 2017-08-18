@@ -8,7 +8,7 @@ import os
 class TilesTestCase(unittest.TestCase):
 
     def test_eTILES(self):
-        base = os.path.dirname(os.path.abspath(__file__))
+#        base = os.getcwd()
         os.makedirs("eres")
         et = t.eTILES(filename="sample_net_etiles.tsv", obs=1, path="eres")
         et.execute()

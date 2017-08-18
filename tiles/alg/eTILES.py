@@ -47,7 +47,7 @@ class eTILES(TILES):
         self.status.write(u"Started! (%s) \n\n" % str(time.asctime(time.localtime(time.time()))))
         self.status.flush()
 
-        with open("%s/%s" % (self.base, self.filename), 'r') as f:
+        with open("%s" % self.filename, 'r') as f:
             first_line = f.readline()
 
         actual_time = datetime.datetime.fromtimestamp(float(first_line.rstrip().split("\t")[3]))
