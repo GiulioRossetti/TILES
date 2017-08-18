@@ -10,7 +10,7 @@ class TilesTestCase(unittest.TestCase):
     def test_eTILES(self):
         base = os.path.dirname(os.path.abspath(__file__))
         os.makedirs("eres")
-        et = t.eTILES(filename="%s/sample_net_etiles.tsv" % base, obs=1, path="eres")
+        et = t.eTILES(filename="sample_net_etiles.tsv", obs=1, path="eres")
         et.execute()
 
         count = 0
