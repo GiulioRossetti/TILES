@@ -8,7 +8,7 @@ import os
 class TilesTestCase(unittest.TestCase):
 
     def test_eTILES(self):
-        base = os.getcwd()
+        base = os.path.dirname(os.path.abspath(__file__))
         os.makedirs("eres")
         et = t.eTILES(filename="%s/sample_net_etiles.tsv" % base, obs=1, path="eres")
         et.execute()
@@ -21,7 +21,7 @@ class TilesTestCase(unittest.TestCase):
         shutil.rmtree("eres")
 
     def test_TILES(self):
-        base = os.getcwd()
+        base = os.path.dirname(os.path.abspath(__file__))
         os.makedirs("res")
         et = t.TILES(filename="%s/sample_net_tiles.tsv" % base, obs=1, path="res")
         et.execute()
@@ -56,7 +56,7 @@ class TilesTestCase(unittest.TestCase):
         shutil.rmtree("res3")
 
     def test_TILES_rem(self):
-
+        base = os.path.dirname(os.path.abspath(__file__))
         os.makedirs("res4")
         et = t.TILES(filename="%s/gen_simple.tsv" % base, obs=30, path="res4", ttl=90)
         et.execute()
