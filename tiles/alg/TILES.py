@@ -47,7 +47,7 @@ class TILES(object):
         self.g = g
         self.splits = None
         self.spl = StringIO()
-        self.base = os.getcwd()#os.path.dirname(os.path.abspath(__file__))
+        self.base = os.getcwd() # os.path.dirname(os.path.abspath(__file__))
         self.status = open("%s/%s/extraction_status.txt" % (self.base, path), "w")
         self.removed = 0
         self.added = 0
