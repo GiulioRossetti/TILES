@@ -2,13 +2,12 @@
     Created on 11/feb/2015
     @author: Giulio Rossetti
 """
-import abc
 import networkx as nx
 import gzip
 import datetime
 import time
 from future.utils import iteritems
-import copy
+import os
 
 import sys
 if sys.version_info > (2, 7):
@@ -31,8 +30,6 @@ class TILES(object):
         Algorithm for evolutionary community discovery
     """
 
-    __metaclass__ = abc.ABCMeta
-
     def __init__(self, filename=None, g=nx.Graph(), ttl=float('inf'), obs=7, path="", start=None, end=None):
         """
             Constructor
@@ -50,7 +47,8 @@ class TILES(object):
         self.g = g
         self.splits = None
         self.spl = StringIO()
-        self.status = open("%s/extraction_status.txt" % path, "w")
+        self.base = os.getcwd()#os.path.dirname(os.path.abspath(__file__))
+        self.status = open("%s/%s/extraction_status.txt" % (self.base, path), "w")
         self.removed = 0
         self.added = 0
         self.filename = filename
@@ -118,7 +116,7 @@ class TILES(object):
                 actual_time = dt
                 self.status.flush()
 
-                self.splits = gzip.open("%s/splitting-%d.gz" % (self.path, self.actual_slice), "wt", 3)
+                self.splits = gzip.open("%s/%s/splitting-%d.gz" % (self.base, self.path, self.actual_slice), "wt", 3)
                 self.splits.write(self.spl.getvalue())
                 self.splits.flush()
                 self.splits.close()
@@ -396,7 +394,7 @@ class TILES(object):
             Print the actual communities
         """
 
-        out_file_coms = gzip.open("%s/strong-communities-%d.gz" % (self.path, self.actual_slice), "wt", 3)
+        out_file_coms = gzip.open("%s/%s/strong-communities-%d.gz" % (self.base, self.path, self.actual_slice), "wt", 3)
         com_string = StringIO()
 
         nodes_to_coms = {}
@@ -455,7 +453,7 @@ class TILES(object):
         # write the graph
         self.status.write(u"Writing actual graph status (%s)\n" % str(time.asctime(time.localtime(time.time()))))
         self.status.flush()
-        out_file_graph = gzip.open("%s/graph-%d.gz" % (self.path, self.actual_slice), "wt", 3)
+        out_file_graph = gzip.open("%s/%s/graph-%d.gz" % (self.base, self.path, self.actual_slice), "wt", 3)
         g_string = StringIO()
         for e in self.g.edges():
             g_string.write(u"%d\t%s\t%d\n" % (e[0], e[1], self.g.edge[e[0]][e[1]]['weight']))
@@ -467,7 +465,7 @@ class TILES(object):
         # Write merge status
         self.status.write(u"Writing merging file (%s)\n" % str(time.asctime(time.localtime(time.time()))))
         self.status.flush()
-        out_file_merge = gzip.open("%s/merging-%d.gz" % (self.path, self.actual_slice), "wt", 3)
+        out_file_merge = gzip.open("%s/%s/merging-%d.gz" % (self.base, self.path, self.actual_slice), "wt", 3)
         m_string = StringIO()
         for comid, c_val in iteritems(merge):
             # maintain minimum community after merge

@@ -7,7 +7,7 @@ import networkx as nx
 import gzip
 import datetime
 import time
-from tiles.alg.TILES import TILES
+from .TILES import TILES
 
 
 import sys
@@ -47,7 +47,7 @@ class eTILES(TILES):
         self.status.write(u"Started! (%s) \n\n" % str(time.asctime(time.localtime(time.time()))))
         self.status.flush()
 
-        with open(self.filename, 'r') as f:
+        with open("%s/%s" % (self.base, self.filename), 'r') as f:
             first_line = f.readline()
 
         actual_time = datetime.datetime.fromtimestamp(float(first_line.rstrip().split("\t")[3]))
@@ -60,7 +60,7 @@ class eTILES(TILES):
         #                   Main Cycle                  #
         #################################################
 
-        f = open(self.filename)
+        f = open("%s/%s" % (self.base, self.filename))
         for l in f:
             l = l.rstrip().split("\t")
             self.added += 1
@@ -97,7 +97,7 @@ class eTILES(TILES):
                 actual_time = dt
                 self.status.flush()
 
-                self.splits = gzip.open("%s/splitting-%d.gz" % (self.path, self.actual_slice), "wt", 3)
+                self.splits = gzip.open("%s/%s/splitting-%d.gz" % (self.base, self.path, self.actual_slice), "wt", 3)
                 self.splits.write(self.spl.getvalue())
                 self.splits.flush()
                 self.splits.close()
