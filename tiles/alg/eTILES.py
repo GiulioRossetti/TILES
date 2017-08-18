@@ -60,7 +60,7 @@ class eTILES(TILES):
         #                   Main Cycle                  #
         #################################################
 
-        f = open("%s/%s" % (self.base, self.filename))
+        f = open("%s" % self.filename)
         for l in f:
             l = l.rstrip().split("\t")
             self.added += 1

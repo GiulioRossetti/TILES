@@ -8,9 +8,9 @@ import os
 class TilesTestCase(unittest.TestCase):
 
     def test_eTILES(self):
-#        base = os.getcwd()
+        base = os.getcwd()
         os.makedirs("eres")
-        et = t.eTILES(filename="sample_net_etiles.tsv", obs=1, path="eres")
+        et = t.eTILES(filename="%s/sample_net_etiles.tsv" % base, obs=1, path="eres")
         et.execute()
 
         count = 0
@@ -21,9 +21,9 @@ class TilesTestCase(unittest.TestCase):
         shutil.rmtree("eres")
 
     def test_TILES(self):
-
+        base = os.getcwd()
         os.makedirs("res")
-        et = t.TILES(filename="sample_net_tiles.tsv", obs=1, path="res")
+        et = t.TILES(filename="%s/sample_net_tiles.tsv" % base, obs=1, path="res")
         et.execute()
 
         count = 0
@@ -34,7 +34,7 @@ class TilesTestCase(unittest.TestCase):
         shutil.rmtree("res")
 
         os.makedirs("res2")
-        et = t.TILES(filename="sample_net_tiles.tsv", obs=1, path="res2", ttl=1)
+        et = t.TILES(filename="%s/sample_net_tiles.tsv" % base, obs=1, path="res2", ttl=1)
         et.execute()
 
         count = 0
@@ -45,7 +45,7 @@ class TilesTestCase(unittest.TestCase):
         shutil.rmtree("res2")
 
         os.makedirs("res3")
-        et = t.TILES(filename="sample_net_tiles.tsv", obs=1, path="res3", ttl=2)
+        et = t.TILES(filename="%s/sample_net_tiles.tsv" % base, obs=1, path="res3", ttl=2)
         et.execute()
 
         count = 0
@@ -58,7 +58,7 @@ class TilesTestCase(unittest.TestCase):
     def test_TILES_rem(self):
 
         os.makedirs("res4")
-        et = t.TILES(filename="gen_simple.tsv", obs=30, path="res4", ttl=90)
+        et = t.TILES(filename="%s/gen_simple.tsv" % base, obs=30, path="res4", ttl=90)
         et.execute()
 
         count = 0
