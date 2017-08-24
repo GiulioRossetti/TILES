@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/GiulioRossetti/TILES/badge.svg?branch=master)](https://coveralls.io/github/GiulioRossetti/TILES?branch=master)
 [![pyversions](https://img.shields.io/pypi/pyversions/TILES.svg)](https://badge.fury.io/py/TILES)
 [![PyPI version](https://badge.fury.io/py/tiles.svg)](https://badge.fury.io/py/TILES)
+[![Updates](https://pyup.io/repos/github/GiulioRossetti/TILES/shield.svg)](https://pyup.io/repos/github/GiulioRossetti/TILES/)
 [![BCH compliance](https://bettercodehub.com/edge/badge/GiulioRossetti/TILES?branch=master)](https://bettercodehub.com/)
 
 
