@@ -1,2 +1,2 @@
-future
+future==0.16.0
 networkx==1.11
