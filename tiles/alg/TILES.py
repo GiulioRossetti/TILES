@@ -143,15 +143,15 @@ class TILES(object):
                 self.g.node[v]['c_coms'] = {}
 
             if self.g.has_edge(u, v):
-                w = self.g.edge[u][v]["weight"]
-                self.g.edge[u][v]["weight"] = w + e['weight']
+                w = self.g.adj[u][v]["weight"]
+                self.g.adj[u][v]["weight"] = w + e['weight']
                 continue
             else:
                 self.g.add_edge(u, v)
-                self.g.edge[u][v]["weight"] = e['weight']
+                self.g.adj[u][v]["weight"] = e['weight']
 
-            u_n = self.g.neighbors(u)
-            v_n = self.g.neighbors(v)
+            u_n = list(self.g.neighbors(u))
+            v_n = list(self.g.neighbors(v))
 
             #############################################
             #               Evolution                   #
@@ -218,18 +218,18 @@ class TILES(object):
                     v = int(e[1])
                     if self.g.has_edge(u, v):
 
-                        w = self.g.edge[u][v]["weight"]
+                        w = self.g.adj[u][v]["weight"]
 
                         # decreasing link weight if greater than one
                         # (multiple occurrence of the edge: remove only the oldest)
                         if w > 1:
-                            self.g.edge[u][v]["weight"] = w - 1
+                            self.g.adj[u][v]["weight"] = w - 1
                             e = (u,  v, w-1)
                             qr.put((at, e))
 
                         else:
                             # u and v shared communities
-                            if len(self.g.neighbors(u)) > 1 and len(self.g.neighbors(v)) > 1:
+                            if len(list(self.g.neighbors(u))) > 1 and len(list(self.g.neighbors(v))) > 1:
                                 coms = set(self.g.node[u]['c_coms'].keys()) & set(self.g.node[v]['c_coms'].keys())
 
                                 for c in coms:
@@ -244,12 +244,12 @@ class TILES(object):
                                         ctc = set(coms_to_change[c])
                                         coms_to_change[c] = list(ctc)
                             else:
-                                if len(self.g.neighbors(u)) < 2:
+                                if len(list(self.g.neighbors(u))) < 2:
                                     coms_u = [x for x in self.g.node[u]['c_coms'].keys()]
                                     for cid in coms_u:
                                         self.remove_from_community(u, cid)
 
-                                if len(self.g.neighbors(v)) < 2:
+                                if len(list(self.g.neighbors(v))) < 2:
                                     coms_v = [x for x in self.g.node[v]['c_coms'].keys()]
                                     for cid in coms_v:
                                         self.remove_from_community(v, cid)
@@ -456,7 +456,7 @@ class TILES(object):
         out_file_graph = gzip.open("%s/%s/graph-%d.gz" % (self.base, self.path, self.actual_slice), "wt", 3)
         g_string = StringIO()
         for e in self.g.edges():
-            g_string.write(u"%d\t%s\t%d\n" % (e[0], e[1], self.g.edge[e[0]][e[1]]['weight']))
+            g_string.write(u"%d\t%s\t%d\n" % (e[0], e[1], self.g.adj[e[0]][e[1]]['weight']))
 
         out_file_graph.write(g_string.getvalue())
         out_file_graph.flush()

@@ -124,15 +124,14 @@ class eTILES(TILES):
                 self.g.node[v]['c_coms'] = {}
 
             if self.g.has_edge(u, v):
-                w = self.g.edge[u][v]["weight"]
-                self.g.edge[u][v]["weight"] = w + e['weight']
+                w = self.g.adj[u][v]["weight"]
+                self.g.adj[u][v]["weight"] = w + e['weight']
                 continue
             else:
-                self.g.add_edge(u, v)
-                self.g.edge[u][v]["weight"] = e['weight']
+                self.g.add_edge(u, v, weight=e['weight'])
 
-            u_n = self.g.neighbors(u)
-            v_n = self.g.neighbors(v)
+            u_n = list(self.g.neighbors(u))
+            v_n = list(self.g.neighbors(v))
 
             #############################################
             #               Evolution                   #
@@ -174,7 +173,7 @@ class eTILES(TILES):
         if self.g.has_edge(u, v):
 
             # u and v shared communities
-            if len(self.g.neighbors(u)) > 1 and len(self.g.neighbors(v)) > 1:
+            if len(list(self.g.neighbors(u))) > 1 and len(list(self.g.neighbors(v))) > 1:
                 coms = set(self.g.node[u]['c_coms'].keys()) & set(self.g.node[v]['c_coms'].keys())
 
                 for c in coms:
@@ -189,12 +188,12 @@ class eTILES(TILES):
                         ctc = set(coms_to_change[c])
                         coms_to_change[c] = list(ctc)
             else:
-                if len(self.g.neighbors(u)) < 2:
+                if len(list(self.g.neighbors(u))) < 2:
                     coms_u = self.g.node[u]['c_coms'].keys()
                     for cid in coms_u:
                         self.remove_from_community(u, cid)
 
-                if len(self.g.neighbors(v)) < 2:
+                if len(list(self.g.neighbors(v))) < 2:
                     coms_v = self.g.node[v]['c_coms'].keys()
                     for cid in coms_v:
                         self.remove_from_community(v, cid)

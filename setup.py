@@ -9,7 +9,7 @@ __email__ = "giulio.rossetti@gmail.com"
 #    long_description = f.read()
 
 setup(name='tiles',
-      version='1.0.3',
+      version='1.0.4',
       license='BSD-2-Clause',
       description='Dynamic Community Discovery algorithm',
       url='https://github.com/GiulioRossetti/TILES',

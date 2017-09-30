@@ -68,5 +68,6 @@ class TilesTestCase(unittest.TestCase):
         self.assertEqual(count, 34)
         shutil.rmtree("res4")
 
+
 if __name__ == '__main__':
     unittest.main()
