@@ -7,6 +7,7 @@ import networkx as nx
 import gzip
 import datetime
 import time
+import copy
 from .TILES import TILES
 
 
@@ -189,12 +190,12 @@ class eTILES(TILES):
                         coms_to_change[c] = list(ctc)
             else:
                 if len(list(self.g.neighbors(u))) < 2:
-                    coms_u = self.g.node[u]['c_coms'].keys()
+                    coms_u = copy.copy(list(self.g.node[u]['c_coms'].keys()))
                     for cid in coms_u:
                         self.remove_from_community(u, cid)
 
                 if len(list(self.g.neighbors(v))) < 2:
-                    coms_v = self.g.node[v]['c_coms'].keys()
+                    coms_v = copy.copy(list(self.g.node[v]['c_coms'].keys()))
                     for cid in coms_v:
                         self.remove_from_community(v, cid)
 
