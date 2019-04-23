@@ -102,6 +102,7 @@ class TILES(object):
 
             if dif >= self.obs:
                 last_break = dt
+                self.added -= 1
 
                 print("New slice. Starting Day: %s" % dt)
 
@@ -110,7 +111,7 @@ class TILES(object):
                                    str(time.asctime(time.localtime(time.time())))))
 
                 self.status.write(u"Edge Added: %d\tEdge removed: %d\n" % (self.added, self.removed))
-                self.added = 0
+                self.added = 1
                 self.removed = 0
 
                 actual_time = dt
