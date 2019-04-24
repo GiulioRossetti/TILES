@@ -30,7 +30,7 @@ class TILES(object):
         Algorithm for evolutionary community discovery
     """
 
-    def __init__(self, filename=None, g=nx.Graph(), ttl=float('inf'), obs=7, path="", start=None, end=None):
+    def __init__(self, filename=None, g=None, ttl=float('inf'), obs=7, path="", start=None, end=None):
         """
             Constructor
             :param g: networkx graph
@@ -44,7 +44,10 @@ class TILES(object):
         self.ttl = ttl
         self.cid = 0
         self.actual_slice = 0
-        self.g = g
+        if g is None:
+            self.g = nx.Graph()
+        else:
+            self.g = g
         self.splits = None
         self.spl = StringIO()
         self.base = os.getcwd()

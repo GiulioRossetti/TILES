@@ -30,7 +30,7 @@ class eTILES(TILES):
         ***Explicit removal***
     """
 
-    def __init__(self, filename=None, g=nx.Graph(), obs=7, path="", start=None, end=None):
+    def __init__(self, filename=None, g=None, obs=7, path="", start=None, end=None):
         """
             Constructor
             :param g: networkx graph
