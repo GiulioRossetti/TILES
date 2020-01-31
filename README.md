@@ -7,6 +7,7 @@
 [![Updates](https://pyup.io/repos/github/GiulioRossetti/TILES/shield.svg)](https://pyup.io/repos/github/GiulioRossetti/TILES/)
 [![BCH compliance](https://bettercodehub.com/edge/badge/GiulioRossetti/TILES?branch=master)](https://bettercodehub.com/)
 [![DOI](https://zenodo.org/badge/60351955.svg)](https://zenodo.org/badge/latestdoi/60351955)
+[![PyPI download month](https://img.shields.io/pypi/dm/tiles.svg?color=blue&style=plastic)](https://pypi.python.org/pypi/tiles/)
 
 
 
