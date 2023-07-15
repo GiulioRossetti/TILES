@@ -528,7 +528,7 @@ class TILES(object):
                                 break
                             else:
                                 neighbors_v = set(self.g.neighbors(v))
-                                cn = neighbors_v & neighbors_v
+                                cn = neighbors_v & neighbors_u
                                 if len(cn) > 0:
                                     central[u] = None
                                     central[v] = None
