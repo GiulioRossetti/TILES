@@ -119,11 +119,11 @@ class eTILES(TILES):
 
             if not self.g.has_node(u):
                 self.g.add_node(u)
-                self.g.node[u]['c_coms'] = {}
+                self.g.nodes[u]['c_coms'] = {}
 
             if not self.g.has_node(v):
                 self.g.add_node(v)
-                self.g.node[v]['c_coms'] = {}
+                self.g.nodes[v]['c_coms'] = {}
 
             if self.g.has_edge(u, v):
                 w = self.g.adj[u][v]["weight"]
@@ -176,7 +176,7 @@ class eTILES(TILES):
 
             # u and v shared communities
             if len(list(self.g.neighbors(u))) > 1 and len(list(self.g.neighbors(v))) > 1:
-                coms = set(self.g.node[u]['c_coms'].keys()) & set(self.g.node[v]['c_coms'].keys())
+                coms = set(self.g.nodes[u]['c_coms'].keys()) & set(self.g.nodes[v]['c_coms'].keys())
 
                 for c in coms:
                     if c not in coms_to_change:
@@ -191,12 +191,12 @@ class eTILES(TILES):
                         coms_to_change[c] = list(ctc)
             else:
                 if len(list(self.g.neighbors(u))) < 2:
-                    coms_u = copy.copy(list(self.g.node[u]['c_coms'].keys()))
+                    coms_u = copy.copy(list(self.g.nodes[u]['c_coms'].keys()))
                     for cid in coms_u:
                         self.remove_from_community(u, cid)
 
                 if len(list(self.g.neighbors(v))) < 2:
-                    coms_v = copy.copy(list(self.g.node[v]['c_coms'].keys()))
+                    coms_v = copy.copy(list(self.g.nodes[v]['c_coms'].keys()))
                     for cid in coms_v:
                         self.remove_from_community(v, cid)
 

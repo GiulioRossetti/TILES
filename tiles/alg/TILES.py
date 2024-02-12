@@ -140,11 +140,11 @@ class TILES(object):
 
             if not self.g.has_node(u):
                 self.g.add_node(u)
-                self.g.node[u]['c_coms'] = {}  # central
+                self.g.nodes[u]['c_coms'] = {}  # central
 
             if not self.g.has_node(v):
                 self.g.add_node(v)
-                self.g.node[v]['c_coms'] = {}
+                self.g.nodes[v]['c_coms'] = {}
 
             if self.g.has_edge(u, v):
                 w = self.g.adj[u][v]["weight"]
@@ -234,7 +234,7 @@ class TILES(object):
                         else:
                             # u and v shared communities
                             if len(list(self.g.neighbors(u))) > 1 and len(list(self.g.neighbors(v))) > 1:
-                                coms = set(self.g.node[u]['c_coms'].keys()) & set(self.g.node[v]['c_coms'].keys())
+                                coms = set(self.g.nodes[u]['c_coms'].keys()) & set(self.g.nodes[v]['c_coms'].keys())
 
                                 for c in coms:
                                     if c not in coms_to_change:
@@ -249,12 +249,12 @@ class TILES(object):
                                         coms_to_change[c] = list(ctc)
                             else:
                                 if len(list(self.g.neighbors(u))) < 2:
-                                    coms_u = [x for x in self.g.node[u]['c_coms'].keys()]
+                                    coms_u = [x for x in self.g.nodes[u]['c_coms'].keys()]
                                     for cid in coms_u:
                                         self.remove_from_community(u, cid)
 
                                 if len(list(self.g.neighbors(v))) < 2:
-                                    coms_v = [x for x in self.g.node[v]['c_coms'].keys()]
+                                    coms_v = [x for x in self.g.nodes[v]['c_coms'].keys()]
                                     for cid in coms_v:
                                         self.remove_from_community(v, cid)
 
@@ -361,15 +361,15 @@ class TILES(object):
 
         else:
 
-            shared_coms = set(self.g.node[v]['c_coms'].keys()) & set(self.g.node[u]['c_coms'].keys())
-            only_u = set(self.g.node[u]['c_coms'].keys()) - set(self.g.node[v]['c_coms'].keys())
-            only_v = set(self.g.node[v]['c_coms'].keys()) - set(self.g.node[u]['c_coms'].keys())
+            shared_coms = set(self.g.nodes[v]['c_coms'].keys()) & set(self.g.nodes[u]['c_coms'].keys())
+            only_u = set(self.g.nodes[u]['c_coms'].keys()) - set(self.g.nodes[v]['c_coms'].keys())
+            only_v = set(self.g.nodes[v]['c_coms'].keys()) - set(self.g.nodes[u]['c_coms'].keys())
 
             # community propagation: a community is propagated iff at least two of [u, v, z] are central
             propagated = False
 
             for z in common_neighbors:
-                for c in self.g.node[z]['c_coms'].keys():
+                for c in self.g.nodes[z]['c_coms'].keys():
                     if c in only_v:
                         self.add_to_community(u, c)
                         propagated = True
@@ -379,7 +379,7 @@ class TILES(object):
                         propagated = True
 
                 for c in shared_coms:
-                    if c not in self.g.node[z]['c_coms']:
+                    if c not in self.g.nodes[z]['c_coms']:
                         self.add_to_community(z, c)
                         propagated = True
 
@@ -502,15 +502,15 @@ class TILES(object):
 
     def add_to_community(self, node, cid):
 
-        self.g.node[node]['c_coms'][cid] = None
+        self.g.nodes[node]['c_coms'][cid] = None
         if cid in self.communities:
             self.communities[cid][node] = None
         else:
             self.communities[cid] = {node: None}
 
     def remove_from_community(self, node, cid):
-        if cid in self.g.node[node]['c_coms']:
-            self.g.node[node]['c_coms'].pop(cid, None)
+        if cid in self.g.nodes[node]['c_coms']:
+            self.g.nodes[node]['c_coms'].pop(cid, None)
             if cid in self.communities and node in self.communities[cid]:
                 self.communities[cid].pop(node, None)
 
