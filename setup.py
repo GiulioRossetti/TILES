@@ -15,7 +15,8 @@ setup(name='tiles',
       url='https://github.com/GiulioRossetti/TILES',
       author='Giulio Rossetti',
       author_email='giulio.rossetti@gmail.com',
-      use_2to3=True,
+      # Removed, causing error on setup
+      #use_2to3=True,
       classifiers=[
           # How mature is this project? Common values are
           #   3 - Alpha
